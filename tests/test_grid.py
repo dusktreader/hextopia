@@ -97,3 +97,11 @@ class TestHexGrid:
 
             Coords(+2, -1): 0,
         }
+
+    def test_iter(self):
+        grid = HexGrid(size=3)
+        all_coords = [c for c in grid]
+        assert len(all_coords) == 19
+        assert len(all_coords) == len(set(all_coords))
+        for c in all_coords:
+            assert grid.contains(c)

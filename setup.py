@@ -27,6 +27,7 @@ setup(
         'sqlparse',
         'uwsgi',
         'Flask-SQLAlchemy',
+        'pydon',
     ],
     extras_require={
         'dev': [

@@ -1,1 +1,2 @@
 DEFAULT_GRID_SIZE = 100
+DEFAULT_CONFIG_FILE = 'etc/defaults.pydon'
