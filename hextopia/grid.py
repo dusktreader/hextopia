@@ -6,7 +6,7 @@ from hextopia.constants import (
 )
 
 
-Coords = namedtuple('Coords', ['x', 'y'])
+Coords = namedtuple('Coords', ['a', 'b'])
 
 
 class HexGrid:
@@ -14,48 +14,48 @@ class HexGrid:
     def __init__(self, size=DEFAULT_GRID_SIZE):
         self.size = size
 
-    def check_coords(self, coords):
+    def contains(self, coords):
+        if coords.a * coords.b > 0:
+            return abs(coords.a) + abs(coords.b) < self.size
+        else:
+            return abs(coords.a) < self.size and abs(coords.b) < self.size
+
+    def immediate_neighbors(self, coords):
         HexError.require_condition(
-            0 <= coords.x < self.size and 0 <= coords.y < self.size,
+            self.contains(coords),
             "coords ({}, {}) are outside the grid bounds",
-            self.x, self.y,
+            coords.a, coords.b,
         )
+        neighbors = [
+            Coords(coords.a + 0, coords.b - 1),
+            Coords(coords.a + 1, coords.b - 1),
+            Coords(coords.a + 1, coords.b + 0),
+            Coords(coords.a + 0, coords.b + 1),
+            Coords(coords.a - 1, coords.b + 1),
+            Coords(coords.a - 1, coords.b + 0),
+        ]
+        return [n for n in neighbors if self.contains(n)]
 
-    def check_index(self, idx):
+    def neighborhood(self, coords, radius):
         HexError.require_condition(
-            0 <= idx < self.size,
-            "index [{}] is outside the grid bounds",
-            self.idx,
+            self.contains(coords),
+            "coords ({}, {}) are outside the grid bounds",
+            coords.a, coords.b,
         )
 
-    def coords(self, idx):
-        """
-        Returns the coordinate pair for a given index
-        """
-        self.check_index(idx)
-        x = idx % self.size
-        y = idx // self.size
-        return Coords(x, y)
-
-
-    def neighbors(self, coords):
-        """
-        Returns the six immmediate neighbors for a particular coordinate pair
-
-        given a coordiate
-
-          x x x x x x x x x
-         x x x x X X x x x x
-        x x x x X O X x x x x
-         x x x x X X x x x x
-          x x x x x x x x x
-
-         a b
-        c O d
-         e f
-        """
-        hoods = [
-            Coords(coords.x, (coords.y - 1) % self.size),
-            Coords(coords.x, (coords.y - 1) % self.size),
-
-
+        HexError.require_condition(
+            radius > 0,
+            "radius must be a positive integer",
+        )
+        current_radius = 0
+        neighborhood = {}
+        pending = {coords: current_radius}
+        while len(pending) > 0:
+            for c in list(pending.keys()):
+                r = pending.pop(c)
+                neighborhood[c] = r
+                if r < radius:
+                    for n in self.immediate_neighbors(c):
+                        if n not in pending and n not in neighborhood:
+                            pending[n] = r + 1
+        return neighborhood
