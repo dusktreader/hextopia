@@ -1,19 +1,10 @@
-"""
-Basic infrastructure for CEM tests using pytest
-"""
-
-import arrow
-import collections
-import datetime
 import inspect
-import logging
 import os
 import pytest
-import re
-import sqlalchemy.orm
 
 from hextopia.config import HexConfig
-from cem.utilities.app import create_app, db
+from hextopia.app import create_app, db
+
 
 @pytest.fixture(scope='session')
 def find_data_file():
@@ -39,27 +30,12 @@ def find_data_file():
     return _helper
 
 
-@pytest.fixture(autouse=True)
-def set_caplog_level(app, caplog):
-    """
-    This fixture restricts the log levels that are captured by caplog for each
-    funciton. Unfortunately, caplog can only be consumed by other function
-    scoped fixtures. So, for exaple, if the config file sets the log level
-    to 'INFO' and there are any 'DEBUG' log lines in code that is executed
-    in fixtures with a wider scope than function, those will appear in the
-    caplog.
-
-    .. note:: This doesn't seem to work at all
-    """
-    caplog.set_level(getattr(logging, app.config['LOGGER_LEVEL']))
-
-
 @pytest.yield_fixture(scope='session')
 def app():
     """
     A fixture that provides an app throughout the entire test run session
     """
-    test_config_file = os.environ.get('TEST_CONFIG_FILE') or 'etc/test.json'
+    test_config_file = os.environ.get('TEST_CONFIG_FILE') or 'etc/test.pydon'
     test_config = HexConfig.load_config(test_config_file)
     app = create_app(test_config)
     context = app.app_context()
@@ -70,6 +46,10 @@ def app():
 
 @pytest.yield_fixture(autouse=True)
 def function_set_up(app, request):
+    """
+    A fixture that creates a nested session for each test method and then rolls
+    back changes when the method completes
+    """
     with app.app_context():
         db.session.begin_nested()
         yield
@@ -87,7 +67,6 @@ def session_set_up(app, request):
         db.drop_all()
         db.session.commit()
         db.create_all()
-        create_default_data()
         db.session.commit()
         yield
         db.drop_all()

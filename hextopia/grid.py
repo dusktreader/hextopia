@@ -10,6 +10,10 @@ class Coords:
         self.a = a
         self.b = b
 
+    def __iter__(self):
+        yield self.a
+        yield self.b
+
     def __getitem__(self, idx):
         if idx == 0:
             return self.a

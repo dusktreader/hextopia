@@ -1,0 +1,7 @@
+{
+    "DEBUG":                True,
+    "TESTING":              False,
+    "DATABASE_NAME":        "some_database_server",
+    "LOGGER_EMAIL_SUBJECT": "why logging is the best",
+    "NAME":                 "Just a normal test config",
+}

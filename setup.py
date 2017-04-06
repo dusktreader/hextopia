@@ -28,6 +28,7 @@ setup(
         'uwsgi',
         'Flask-SQLAlchemy',
         'pydon',
+        'logbook',
     ],
     extras_require={
         'dev': [

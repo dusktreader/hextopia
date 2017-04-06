@@ -1,0 +1,6 @@
+{
+    "DATABASE_NAME":       "local_test",
+    "DATABASE_URI_FORMAT": "{dialect}+{driver}://{server}:{port}/{name}",
+    "DEBUG":               True,
+    "TESTING":             True,
+}
