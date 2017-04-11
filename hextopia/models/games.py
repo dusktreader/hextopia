@@ -3,9 +3,6 @@ import flask_restplus
 from hextopia.misc import classproperty
 from hextopia.app import db
 from hextopia.models.boards import Board
-from hextopia.constants import (
-    DEFAULT_GRID_SIZE,
-)
 
 
 class Game(db.Model):
@@ -22,12 +19,27 @@ class Game(db.Model):
     )
 
     @classmethod
-    def create(cls, name, board_size=DEFAULT_GRID_SIZE):
-        self = cls(name=name)
+    def create(cls, **kwargs):
+        board_kwargs = {}
+        for key in list(kwargs.keys()):
+            if key.startswith('board_'):
+                board_kwargs[key.replace('board_', '')] = kwargs.pop(key)
+
+        self = cls(**kwargs)
         with db.session.begin_nested():
             db.session.add(self)
-        Board.create(game=self, size=board_size)
+        Board.create(game=self, **board_kwargs)
         return self
+
+    def update(self, **kwargs):
+        return self
+
+    def delete(self):
+        try:
+            with db.session.begin_nested():
+                db.session.delete(self)
+        except Exception as err:
+            print("what the fuck, {}".format(err))
 
     def serialize(self):
         return {
@@ -37,9 +49,20 @@ class Game(db.Model):
         }
 
     @classproperty
-    def serialized_model(cls):
+    def get_schema(cls):
         return {
             'id': flask_restplus.fields.Integer,
             'name': flask_restplus.fields.String,
             'board_id': flask_restplus.fields.Integer,
+        }
+
+    @classproperty
+    def put_schema(cls):
+        return {}
+
+    @classproperty
+    def post_schema(cls):
+        return {
+            'name': flask_restplus.fields.String,
+            'board_size': flask_restplus.fields.Integer,
         }

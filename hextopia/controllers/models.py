@@ -16,10 +16,10 @@ class ModelController:
         return self._get_instance(id).serialize()
 
     def update(self, id, **kwargs):
-        return self._get_instance(id).update(**kwargs).serialze()
+        return self._get_instance(id).update(**kwargs).serialize()
 
     def delete(self, id):
-        return self._get_instance(id).delete()
+        self._get_instance(id).delete()
 
     def _get_instance(self, id):
         instance = self.model.query.get(id)

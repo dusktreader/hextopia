@@ -13,7 +13,7 @@ class Board(db.Model):
     __tablename__ = 'boards'
 
     id = db.Column(db.Integer, primary_key=True)
-    size = db.Column(db.Integer, nullable=False)
+    size = db.Column(db.Integer, nullable=False, default=DEFAULT_GRID_SIZE)
     game_id = db.Column(
         db.Integer,
         db.ForeignKey('games.id'),
@@ -32,14 +32,11 @@ class Board(db.Model):
     )
 
     @classmethod
-    def create(cls, game, size=DEFAULT_GRID_SIZE):
-        self = cls(
-            game=game,
-            size=size,
-        )
+    def create(cls, game, **kwargs):
+        self = cls(game=game, **kwargs)
         with db.session.begin_nested():
             db.session.add(self)
-        for coords in self.grid:
+        for (i, coords) in enumerate(self.grid):
             Tile.create(self, coords)
         return self
 

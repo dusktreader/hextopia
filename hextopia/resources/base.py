@@ -15,7 +15,7 @@ class HexResource(flask_restplus.Resource):
     _controller = None
 
     @classproperty
-    def controller_class(cls):
+    def controller(cls):
         """
         .. note:: We can't use abc.ABCMeta for this because it causes conflicts
                   with the metaclass used for the Resource base. Thus, we have
