@@ -1,3 +1,6 @@
+import flask_restplus
+
+from hextopia.misc import classproperty
 from hextopia.app import db
 from hextopia.models.boards import Board
 from hextopia.constants import (
@@ -25,3 +28,18 @@ class Game(db.Model):
             db.session.add(self)
         Board.create(game=self, size=board_size)
         return self
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'board_id': self.board.id,
+        }
+
+    @classproperty
+    def serialized_model(cls):
+        return {
+            'id': flask_restplus.fields.Integer,
+            'name': flask_restplus.fields.String,
+            'board_id': flask_restplus.fields.Integer,
+        }

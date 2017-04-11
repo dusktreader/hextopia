@@ -34,3 +34,13 @@ def enboxify(text, boxchar='*', hspace=1, vspace=0):
         )]
     newlines += [boxchar * box_width]
     return '\n'.join(newlines)
+
+
+class classproperty(property):  # noqa
+    """
+    This defines a decorator that can be used to describe a read-only property
+    that is attached to the class itself instead of an instance.
+    """
+
+    def __get__(self, cls, owner):
+        return classmethod(self.fget).__get__(None, owner)()
