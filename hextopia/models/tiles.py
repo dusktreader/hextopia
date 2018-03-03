@@ -28,7 +28,6 @@ class Tile(db.Model):
     current_terrain_id = db.Column(
         db.Integer,
         db.ForeignKey('units.id'),
-        nullable=False,
     )
 
     board = db.relationship('Board', back_populates='tiles')

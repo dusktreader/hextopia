@@ -1,5 +1,6 @@
 from hextopia.models.tiles import Tile
 from hextopia.models.games import Game
+from hextopia.grid import HexGrid
 
 
 class TestBoard:
@@ -8,7 +9,7 @@ class TestBoard:
         game = Game.create(name='test_game', board_size=3)
         board = game.board
         assert board.game is game
-        assert Tile.query.filter_by(board=board).count() > 1
+        assert Tile.query.filter_by(board=board).count() == HexGrid.area(board.size)
 
     def test_tile(self):
         game = Game.create(name='test_game', board_size=3)

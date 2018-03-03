@@ -71,7 +71,15 @@ class HexGrid:
         ]
         return [n for n in neighbors if self.contains(n)]
 
+    @staticmethod
+    def area(radius):
+        return 3 * radius ** 2 - 3 * radius + 1
+
     def neighborhood(self, coords, radius):
+        """
+        I believe the formula for area is:
+        3r**2 - 3r +1
+        """
         coords = Coords(*coords)
         HexError.require_condition(
             self.contains(coords),

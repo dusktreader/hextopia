@@ -6,6 +6,13 @@ from hextopia.exceptions import HexError
 
 class TestHexGrid:
 
+    def test_area(self):
+        """
+        Verifies that the area function is correct
+        """
+        for r in range(1, 20):
+            assert len(list(HexGrid(size=r))) == HexGrid.area(r)
+
     def test_check_coords(self):
         grid = HexGrid(size=3)
 
